@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <time.h>
+#include <sys/time.h>
 #include "sleep.h"
 
 /* 
@@ -139,9 +139,13 @@ int main() {
 	b.cells[5][7] = 1;
 	b.cells[4][7] = 1;
 
+	struct timeval stop, start;
 	for (;;) {
-		show(&b);
+		gettimeofday(&start, NULL);
 		tick(&b);
+		gettimeofday(&stop, NULL);
+		show(&b);
+		printf("frame generated in %lu us\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec); 
 		sleep_ms(100);
 	}
 }
