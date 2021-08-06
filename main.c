@@ -1,8 +1,12 @@
 #include <stdio.h>
+#include <time.h>
+#include "sleep.h"
 
 /* 
  * Build with:
  * gcc main.c -o a.out && ./a.out
+ *
+ * This has been tested on Ubuntu 20.04
  */
 
 #define WIDTH 80
@@ -14,6 +18,7 @@ typedef struct Board {
 	int width;
 	int height;
 	int cells[HEIGHT][WIDTH];
+	int nextCells[HEIGHT][WIDTH];
 } board;
 
 void printHeader(board* b) {
@@ -75,12 +80,57 @@ int countNeighbors(int x, int y, board* b) {
 	return n;
 }
 
+void setNext(int x, int y, int state, board* b) {
+	b->nextCells[y][x] = state;
+}
+
+void applyRules(int x, int y, board* b) {
+	int n = countNeighbors(x, y, b);
+
+	// Any live cell
+	if (get(x, y, b) == 1) {
+		if (n < 2) { // with fewer than two live neighbours
+			// dies, as if by underpopulation.
+			setNext(x, y, 0, b);
+		} else if (n > 3) { // with more than three live neighbours
+			// dies, as if by overpopulation.
+			setNext(x, y, 0, b);
+		} else { // with two or three live neighbours
+			// lives on to the next generation.
+			setNext(x, y, 1, b);
+		}
+	} else {
+		// Any dead cell with exactly three live neighbours
+		// becomes a live cell, as if by reproduction.
+		if (n == 3) {
+			setNext(x, y, 1, b);
+		} else {
+			setNext(x, y, 0, b);
+		}
+	}
+}
+
+void tick(board* b) {
+	// generate next frame
+	for (int y = 0; y < b->height; y++)
+		for (int x = 0; x < b->width; x++)
+			applyRules(x, y, b);
+
+	// copy next frame to current frame
+	for (int y = 0; y < b->height; y++)
+		for (int x = 0; x < b->width; x++)
+			b->cells[y][x] = b->nextCells[y][x];
+}
+
 int main() {
 	/* Initialize board */
 	board b = {WIDTH, HEIGHT};
 	for (int y = 0; y < b.height; y++)
 		for (int x = 0; x < b.width; x++)
 			b.cells[y][x] = 0;
+	for (int y = 0; y < b.height; y++)
+		for (int x = 0; x < b.width; x++)
+			b.nextCells[y][x] = 0;
 
 	b.cells[5][4] = 1;
 	b.cells[5][6] = 1;
@@ -90,7 +140,11 @@ int main() {
 	b.cells[6][4] = 1;
 	b.cells[6][5] = 1;
 	b.cells[6][6] = 1;
-	show(&b);
-	printf("Neighbors: %d\n", countNeighbors(5, 5, &b));
+
+	for (;;) {
+		show(&b);
+		tick(&b);
+		sleep_ms(100);
+	}
 }
 
