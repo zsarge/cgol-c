@@ -3,7 +3,7 @@
 #include "sleep.h"
 
 /* 
- * Build with:
+ * Build and run with:
  * gcc main.c -o a.out && ./a.out
  *
  * This has been tested on Ubuntu 20.04
@@ -135,9 +135,10 @@ int main() {
 	// a glider:
 	b.cells[5][5] = 1;
 	b.cells[6][6] = 1;
-	b.cells[6][7] = 1;
-	b.cells[5][7] = 1;
-	b.cells[4][7] = 1;
+	b.cells[7][6] = 1;
+	b.cells[7][5] = 1;
+	b.cells[7][4] = 1;
+	show(&b);
 
 	struct timeval stop, start;
 	for (;;) {
