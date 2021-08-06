@@ -132,14 +132,12 @@ int main() {
 		for (int x = 0; x < b.width; x++)
 			b.nextCells[y][x] = 0;
 
-	b.cells[5][4] = 1;
-	b.cells[5][6] = 1;
-	b.cells[4][4] = 1;
-	b.cells[4][5] = 1;
-	b.cells[4][6] = 1;
-	b.cells[6][4] = 1;
-	b.cells[6][5] = 1;
+	// a glider:
+	b.cells[5][5] = 1;
 	b.cells[6][6] = 1;
+	b.cells[6][7] = 1;
+	b.cells[5][7] = 1;
+	b.cells[4][7] = 1;
 
 	for (;;) {
 		show(&b);
