@@ -2,7 +2,7 @@
 #include <sys/time.h>
 #include "sleep.h"
 
-/* 
+/*
  * Build and run with:
  * gcc main.c -o a.out && ./a.out
  *
@@ -42,18 +42,18 @@ void show(board* b) {
 
 int get(int x, int y, board* b) {
 	// wrap board like a torus
-	if (y < 0) {
+	if (y < 0)
 		y = b->height + y;
-	}
-	if (x < 0) {
+
+	if (x < 0)
 		x = b->width + x;
-	}
-	if (y >= b->height) {
+
+	if (y >= b->height)
 		y = b->height - y;
-	}
-	if (x >= b->width) {
-		x = b->width - x;
-	}
+
+	if (x >= b->width)
+		x = b->width  - x;
+
 	return b->cells[y][x];
 }
 
@@ -66,17 +66,13 @@ int countNeighbors(int x, int y, board* b) {
 		(x-1, y  ) | (x, y  ) | (x+1, y  )
 		(x-1, y+1) | (x, y+1) | (x+1, y+1)
 	*/
-	for (int dx = -1; dx <= 1; dx++) {
-		for (int dy = -1; dy <= 1; dy++) {
+	for (int dx = -1; dx <= 1; dx++)
+		for (int dy = -1; dy <= 1; dy++)
 			// make sure we don't count the square we're checking around
-			if (x+dx != x || y+dy != y) {
+			if (x+dx != x || y+dy != y)
 				// count alive squares
-				if (get(x+dx, y+dy, b) == 1) {
+				if (get(x+dx, y+dy, b) == 1)
 					n++;
-				}
-			}
-		}
-	}
 	return n;
 }
 
@@ -89,24 +85,22 @@ void applyRules(int x, int y, board* b) {
 
 	// Any live cell
 	if (get(x, y, b) == 1) {
-		if (n < 2) { // with fewer than two live neighbours
+		if (n < 2) // with fewer than two live neighbours
 			// dies, as if by underpopulation.
 			setNext(x, y, 0, b);
-		} else if (n > 3) { // with more than three live neighbours
+		else if (n > 3) // with more than three live neighbours
 			// dies, as if by overpopulation.
 			setNext(x, y, 0, b);
-		} else { // with two or three live neighbours
+		else // with two or three live neighbours
 			// lives on to the next generation.
 			setNext(x, y, 1, b);
-		}
 	} else {
 		// Any dead cell with exactly three live neighbours
 		// becomes a live cell, as if by reproduction.
-		if (n == 3) {
+		if (n == 3)
 			setNext(x, y, 1, b);
-		} else {
+		else
 			setNext(x, y, 0, b);
-		}
 	}
 }
 
@@ -146,7 +140,7 @@ int main() {
 		tick(&b);
 		gettimeofday(&stop, NULL);
 		show(&b);
-		printf("frame generated in %lu us\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec); 
+		printf("frame generated in %lu us\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
 		sleep_ms(100);
 	}
 }
